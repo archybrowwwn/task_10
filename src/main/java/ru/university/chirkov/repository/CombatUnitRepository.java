@@ -17,7 +17,7 @@ public class CombatUnitRepository {
         return units;
     }
 
-    public void delete(CombatUnit unit) {
+    public void remove(CombatUnit unit) {
         units.remove(unit);
     }
 }
