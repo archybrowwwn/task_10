@@ -4,6 +4,7 @@ import ru.university.chirkov.model.BattleField;
 import ru.university.chirkov.service.BattleFieldService;
 import ru.university.chirkov.service.CombatUnitService;
 import ru.university.chirkov.service.StaticObjectService;
+import ru.university.chirkov.ui.ConsoleBattleFieldRenderer;
 
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -14,6 +15,8 @@ public class BattleFieldController {
     private CombatUnitService combatUnitService;
     private StaticObjectService staticObjectService;
     private Scanner scanner;
+    private ConsoleBattleFieldRenderer renderer =
+            new ConsoleBattleFieldRenderer();
 
     public BattleFieldController(
             BattleFieldService service,
@@ -46,9 +49,11 @@ public class BattleFieldController {
             return;
         }
 
-        System.out.println("Поле боя: "
-                + battleField.getWidth() + " x "
-                + battleField.getHeight());
+        renderer.render(
+                battleField,
+                combatUnitService.findAll(),
+                staticObjectService.findAll()
+        );
     }
 
     public void update() {
