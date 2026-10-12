@@ -136,4 +136,88 @@ public class CombatUnitController {
             System.out.println("Боевая единица не найдена");
         }
     }
+
+    public void move() {
+        BattleField battleField = battleFieldService.get();
+
+        if (battleField == null) {
+            System.out.println("Сначала создайте поле");
+            return;
+        }
+
+        System.out.print("Введите ID юнита: ");
+        int id = scanner.nextInt();
+
+        CombatUnit unit = service.findById(id);
+
+        if (unit == null) {
+            System.out.println("Юнит не найден");
+            return;
+        }
+
+        Cell currentCell = unit.getCells().get(0);
+
+        System.out.print("Введите новую X: ");
+        int x = scanner.nextInt();
+
+        System.out.print("Введите новую Y: ");
+        int y = scanner.nextInt();
+
+        if (x < 1 || x > battleField.getWidth()
+                || y < 1 || y > battleField.getHeight()) {
+            System.out.println("Координаты за пределами поля");
+            return;
+        }
+
+        if (x != currentCell.getX() && y != currentCell.getY()) {
+            System.out.println("Двигаться можно только по горизонтали или вертикали");
+            return;
+        }
+
+        int distance = Math.abs(x - currentCell.getX())
+                + Math.abs(y - currentCell.getY());
+
+        if (distance == 0 || distance > unit.getSpeed()) {
+            System.out.println("Недопустимое расстояние");
+            return;
+        }
+
+        int dx = Integer.compare(x, currentCell.getX());
+        int dy = Integer.compare(y, currentCell.getY());
+
+        for (int i = 1; i <= distance; i++) {
+            int nextX = currentCell.getX() + dx * i;
+            int nextY = currentCell.getY() + dy * i;
+
+            for (CombatUnit other : service.findAll()) {
+                if (other.getId() == id) {
+                    continue;
+                }
+
+                for (Cell cell : other.getCells()) {
+                    if (cell.getX() == nextX && cell.getY() == nextY) {
+                        System.out.println("Путь занят другим юнитом");
+                        return;
+                    }
+                }
+            }
+
+            for (StaticObject object : staticObjectService.findAll()) {
+                for (Cell cell : object.getCells()) {
+                    if (cell.getX() == nextX && cell.getY() == nextY) {
+                        System.out.println("Путь заблокирован объектом");
+                        return;
+                    }
+                }
+            }
+        }
+
+        List<Cell> cells = new ArrayList<>();
+        cells.add(new Cell(x, y));
+
+        unit.setCells(cells);
+        service.update(unit);
+
+        System.out.println("Юнит перемещён");
+    }
 }
