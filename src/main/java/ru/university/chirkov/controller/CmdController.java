@@ -1,6 +1,6 @@
-
 package ru.university.chirkov.controller;
 
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class CmdController {
@@ -39,56 +39,68 @@ public class CmdController {
             System.out.println("0. Выход");
             System.out.print("Выберите действие: ");
 
-            if (!scanner.hasNextInt()) {
-                System.out.println("\nВвод завершен или недоступен.");
-                return;
-            }
-
-            int choice = scanner.nextInt();
-            scanner.nextLine();
-
-            switch (choice) {
-                case 1:
-                    battleFieldController.create();
-                    break;
-                case 2:
-                    battleFieldController.show();
-                    break;
-                case 3:
-                    battleFieldController.update();
-                    break;
-                case 4:
-                    battleFieldController.delete();
-                    break;
-                case 5:
-                    combatUnitController.add();
-                    break;
-                case 6:
-                    combatUnitController.showAll();
-                    break;
-                case 7:
-                    combatUnitController.update();
-                    break;
-                case 8:
-                    combatUnitController.remove();
-                    break;
-                case 9:
-                    staticObjectController.add();
-                    break;
-                case 10:
-                    staticObjectController.showAll();
-                    break;
-                case 11:
-                    staticObjectController.update();
-                    break;
-                case 12:
-                    staticObjectController.remove();
-                    break;
-                case 0:
-                    System.out.println("Выход из программы.");
+            try {
+                if (!scanner.hasNextInt()) {
+                    System.out.println("Введите число");
+                    if (scanner.hasNextLine()) {
+                        scanner.nextLine();
+                        continue;
+                    }
                     return;
-                default:
-                    System.out.println("Неверный пункт меню");
+                }
+
+                int choice = scanner.nextInt();
+                scanner.nextLine();
+
+                switch (choice) {
+                    case 1:
+                        battleFieldController.create();
+                        break;
+                    case 2:
+                        battleFieldController.show();
+                        break;
+                    case 3:
+                        battleFieldController.update();
+                        break;
+                    case 4:
+                        battleFieldController.delete();
+                        break;
+                    case 5:
+                        combatUnitController.add();
+                        break;
+                    case 6:
+                        combatUnitController.showAll();
+                        break;
+                    case 7:
+                        combatUnitController.update();
+                        break;
+                    case 8:
+                        combatUnitController.remove();
+                        break;
+                    case 9:
+                        staticObjectController.add();
+                        break;
+                    case 10:
+                        staticObjectController.showAll();
+                        break;
+                    case 11:
+                        staticObjectController.update();
+                        break;
+                    case 12:
+                        staticObjectController.remove();
+                        break;
+                    case 0:
+                        System.out.println("Выход из программы.");
+                        return;
+                    default:
+                        System.out.println("Неверный пункт меню");
+                }
+
+            } catch (InputMismatchException e) {
+                System.out.println("Ошибка ввода. Введите число.");
+                scanner.nextLine();
+            } catch (Exception e) {
+                System.out.println("Ошибка: " + e.getMessage());
             }
         }
     }
