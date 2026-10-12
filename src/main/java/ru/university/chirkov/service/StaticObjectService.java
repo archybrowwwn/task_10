@@ -21,7 +21,15 @@ public class StaticObjectService {
         return repository.findAll();
     }
 
-    public void remove(StaticObject object) {
-        repository.remove(object);
+    public StaticObject findById(int id) {
+        return repository.findById(id);
+    }
+
+    public boolean update(StaticObject object) {
+        return repository.update(object);
+    }
+
+    public boolean remove(int id) {
+        return repository.remove(id);
     }
 }

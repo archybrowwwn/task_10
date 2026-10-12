@@ -8,8 +8,10 @@ import java.util.List;
 public class StaticObjectRepository {
 
     private List<StaticObject> objects = new ArrayList<>();
+    private int nextId = 1;
 
     public void add(StaticObject object) {
+        object.setId(nextId++);
         objects.add(object);
     }
 
@@ -17,7 +19,27 @@ public class StaticObjectRepository {
         return objects;
     }
 
-    public void remove(StaticObject object) {
-        objects.remove(object);
+    public StaticObject findById(int id) {
+        for (StaticObject object : objects) {
+            if (object.getId() == id) {
+                return object;
+            }
+        }
+        return null;
+    }
+
+    public boolean update(StaticObject object) {
+        int index = objects.indexOf(findById(object.getId()));
+
+        if (index == -1) {
+            return false;
+        }
+
+        objects.set(index, object);
+        return true;
+    }
+
+    public boolean remove(int id) {
+        return objects.remove(findById(id));
     }
 }

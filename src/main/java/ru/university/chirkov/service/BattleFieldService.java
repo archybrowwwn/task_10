@@ -3,11 +3,11 @@ package ru.university.chirkov.service;
 import ru.university.chirkov.model.BattleField;
 import ru.university.chirkov.repository.BattleFieldRepository;
 
-public class BattlefieldService {
+public class BattleFieldService {
 
     private BattleFieldRepository repository;
 
-    public BattlefieldService(BattleFieldRepository repository) {
+    public BattleFieldService(BattleFieldRepository repository) {
         this.repository = repository;
     }
 
@@ -17,5 +17,13 @@ public class BattlefieldService {
 
     public BattleField get() {
         return repository.get();
+    }
+
+    public void update(BattleField battleField) {
+        repository.update(battleField);
+    }
+
+    public void delete() {
+        repository.delete();
     }
 }

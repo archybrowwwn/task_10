@@ -21,7 +21,15 @@ public class CombatUnitService {
         return repository.findAll();
     }
 
-    public void remove(CombatUnit unit) {
-        repository.remove(unit);
+    public CombatUnit findById(int id) {
+        return repository.findById(id);
+    }
+
+    public boolean update(CombatUnit unit) {
+        return repository.update(unit);
+    }
+
+    public boolean remove(int id) {
+        return repository.remove(id);
     }
 }

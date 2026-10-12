@@ -25,4 +25,10 @@ public class BattleField {
     public List<Cell> getCells() {
         return cells;
     }
+
+    @Override
+    public String toString() {
+        return "Поле боя: " + width + " x " + height
+                + ", количество клеток: " + cells.size();
+    }
 }

@@ -13,4 +13,22 @@ public class BattleFieldRepository {
     public BattleField get() {
         return battleField;
     }
+
+    public boolean update(BattleField battleField) {
+        if (this.battleField == null) {
+            return false;
+        }
+
+        this.battleField = battleField;
+        return true;
+    }
+
+    public boolean delete() {
+        if (battleField == null) {
+            return false;
+        }
+
+        battleField = null;
+        return true;
+    }
 }
