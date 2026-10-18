@@ -32,4 +32,8 @@ public class StaticObjectService {
     public boolean remove(int id) {
         return repository.remove(id);
     }
+
+    public void deleteAll() {
+        repository.deleteAll();
+    }
 }

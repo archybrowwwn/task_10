@@ -1,6 +1,5 @@
 plugins {
     id 'java'
-    id 'application'
 }
 
 group = 'ru.university.chirkov'
@@ -15,10 +14,10 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter'
 }
 
-application {
-    mainClass = 'ru.university.chirkov.Main'
-}
-
 test {
     useJUnitPlatform()
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
 }

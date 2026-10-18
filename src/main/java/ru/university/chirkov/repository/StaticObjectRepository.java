@@ -42,4 +42,8 @@ public class StaticObjectRepository {
     public boolean remove(int id) {
         return objects.remove(findById(id));
     }
+
+    public void deleteAll() {
+        objects.clear();
+    }
 }

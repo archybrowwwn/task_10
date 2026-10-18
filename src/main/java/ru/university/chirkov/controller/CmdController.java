@@ -37,6 +37,7 @@ public class CmdController {
             System.out.println("11. Изменить статический объект");
             System.out.println("12. Удалить статический объект");
             System.out.println("13. Переместить боевую единицу");
+            System.out.println("14. Выстрелить");
             System.out.println("0. Выход");
             System.out.print("Выберите действие: ");
 
@@ -92,6 +93,9 @@ public class CmdController {
                         break;
                     case 13:
                         combatUnitController.move();
+                        break;
+                    case 14:
+                        combatUnitController.fire();
                         break;
                     case 0:
                         System.out.println("Выход из программы.");

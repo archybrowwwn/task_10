@@ -33,9 +33,9 @@ public class StaticObjectController {
     }
 
     public void add() {
-        BattleField field = battleFieldService.get();
+        BattleField battleField = battleFieldService.get();
 
-        if (field == null) {
+        if (battleField == null) {
             System.out.println("Сначала создайте поле");
             return;
         }
@@ -54,35 +54,55 @@ public class StaticObjectController {
         System.out.print("Введите координату Y: ");
         int y = scanner.nextInt();
 
-        if (x < 1 || x > field.getWidth()
-                || y < 1 || y > field.getHeight()) {
-            System.out.println(
-                    "Координаты находятся за пределами поля");
+        System.out.println("Введите ширину объекта: ");
+        int width = scanner.nextInt();
+
+        System.out.println("Введите высоту объекта: ");
+        int height = scanner.nextInt();
+
+        if (width <= 0 || height <= 0) {
+            System.out.println("Размеры должны быть больше нуля");
             return;
         }
 
+        if (x < 1 || y < 1
+                || x + width - 1 > battleField.getWidth()
+                || y + height - 1 > battleField.getHeight()) {
+            System.out.println("Объект выходит за границы поля");
+            return;
+        }
+
+        List<Cell> cells = new ArrayList<>();
+
+        for (int row = y; row < y + height; row++) {
+            for (int col = x; col < x + width; col++) {
+                cells.add(new Cell(col, row));
+            }
+        }
+
         for (StaticObject object : service.findAll()) {
-            for (Cell cell : object.getCells()) {
-                if (cell.getX() == x && cell.getY() == y) {
-                    System.out.println(
-                            "Клетка уже занята статическим объектом");
-                    return;
+            for (Cell occupied : object.getCells()) {
+                for (Cell cell : cells) {
+                    if (occupied.getX() == cell.getX()
+                            && occupied.getY() == cell.getY()) {
+                        System.out.println("Клетка занята статическим объектом");
+                        return;
+                    }
                 }
             }
         }
 
         for (CombatUnit unit : combatUnitService.findAll()) {
-            for (Cell cell : unit.getCells()) {
-                if (cell.getX() == x && cell.getY() == y) {
-                    System.out.println(
-                            "Клетка занята боевой единицей");
-                    return;
+            for (Cell occupied : unit.getCells()) {
+                for (Cell cell : cells) {
+                    if (occupied.getX() == cell.getX()
+                            && occupied.getY() == cell.getY()) {
+                        System.out.println("Клетка занята боевой единицей");
+                        return;
+                    }
                 }
             }
         }
-
-        List<Cell> cells = new ArrayList<>();
-        cells.add(new Cell(x, y));
 
         service.add(new StaticObject(name, cells));
 

@@ -16,7 +16,7 @@ public class CombatUnit {
         this.speed = speed;
         this.health = 100;
         this.attackRange = 3;
-        this.damage = 0;
+        this.damage = 25;
     }
 
     public int getId() {
@@ -48,14 +48,19 @@ public class CombatUnit {
     }
 
     public void setHealth(int health) {
-        this.health = health;
+        this.health = Math.max(0, health);
     }
 
     public int getAttackRange() {
         return attackRange;
     }
 
-    public void setAttackRange() {
+    public void setAttackRange(int attackRange) {
+        if (attackRange < 1) {
+            throw new IllegalArgumentException(
+                    "Дальность стрельбы должна быть больше нуля"
+            );
+        }
         this.attackRange = attackRange;
     }
 
@@ -64,14 +69,23 @@ public class CombatUnit {
     }
 
     public void setDamage(int damage) {
+        if (damage < 0) {
+            throw new IllegalArgumentException(
+                    "Урон не может быть отрицательным"
+            );
+        }
         this.damage = damage;
+    }
+
+    public boolean isDestroyed() {
+        return health <= 0;
     }
 
     @Override
     public String toString() {
         return "Боевой юнит #" + id
                 + ", скорость: " + speed
-                + ", клетки: " + cells
+                + ", здоровье: " + health
                 + ", дальность стрельбы: " + attackRange
                 + ", урон: " + damage
                 + ", клетки: " + cells;

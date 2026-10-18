@@ -42,4 +42,8 @@ public class CombatUnitRepository {
     public boolean remove(int id) {
         return units.remove(findById(id));
     }
+
+    public void deleteAll() {
+        units.clear();
+    }
 }

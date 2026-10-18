@@ -31,11 +31,23 @@ public class BattleFieldController {
     }
 
     public void create() {
+        if (battleFieldService.get() != null) {
+            System.out.println(
+                    "Поле уже существует. Измените его или удалите перед созданием нового."
+            );
+            return;
+        }
+
         System.out.println("Введите ширину поля: ");
         int width = scanner.nextInt();
 
-        System.out.print("Введите высоту поля: ");
+        System.out.println("Введите высоту поля: ");
         int height = scanner.nextInt();
+
+        if (width <= 0 || height <= 0) {
+            System.out.println("Ошибка: ширина и высота должны быть больше 0");
+            return;
+        }
 
         battleFieldService.save(new BattleField(width, height, new ArrayList<>()));
         System.out.println("Поле создано");
@@ -57,16 +69,64 @@ public class BattleFieldController {
     }
 
     public void update() {
-        if (battleFieldService.get() == null) {
+        BattleField battleField = battleFieldService.get();
+
+        if (battleField == null) {
             System.out.println("Сначала создайте поле");
             return;
         }
 
-        create();
+        System.out.print("Введите новую ширину поля: ");
+        int width = scanner.nextInt();
+
+        System.out.print("Введите новую высоту поля: ");
+        int height = scanner.nextInt();
+
+        if (width <= 0 || height <= 0) {
+            System.out.println("Размеры должны быть больше нуля");
+            return;
+        }
+
+        for (var unit : combatUnitService.findAll()) {
+            for (var cell : unit.getCells()) {
+                if (cell.getX() > width || cell.getY() > height) {
+                    System.out.println(
+                            "Нельзя уменьшить поле: за его пределами находится юнит"
+                    );
+                    return;
+                }
+            }
+        }
+
+        for (var object : staticObjectService.findAll()) {
+            for (var cell : object.getCells()) {
+                if (cell.getX() > width || cell.getY() > height) {
+                    System.out.println(
+                            "Нельзя уменьшить поле: за его пределами находится объект"
+                    );
+                    return;
+                }
+            }
+        }
+
+        battleFieldService.update(
+                new BattleField(width, height, new ArrayList<>())
+        );
+
+        System.out.println("Поле обновлено");
     }
 
     public void delete() {
+        if (battleFieldService.get() == null) {
+            System.out.println("Поле еще не создано");
+            return;
+        }
+
+        combatUnitService.deleteAll();
+        staticObjectService.deleteAll();
+
         battleFieldService.delete();
+
         System.out.println("Поле удалено");
     }
 }
