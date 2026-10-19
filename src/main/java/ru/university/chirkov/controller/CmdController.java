@@ -1,5 +1,7 @@
 package ru.university.chirkov.controller;
 
+import ru.university.chirkov.exception.BusinessException;
+
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
@@ -44,10 +46,12 @@ public class CmdController {
             try {
                 if (!scanner.hasNextInt()) {
                     System.out.println("Введите число");
+
                     if (scanner.hasNextLine()) {
                         scanner.nextLine();
                         continue;
                     }
+
                     return;
                 }
 
@@ -107,6 +111,8 @@ public class CmdController {
             } catch (InputMismatchException e) {
                 System.out.println("Ошибка ввода. Введите число.");
                 scanner.nextLine();
+            } catch (BusinessException e) {
+                System.out.println("Ошибка: " + e.getMessage());
             } catch (Exception e) {
                 System.out.println("Ошибка: " + e.getMessage());
             }

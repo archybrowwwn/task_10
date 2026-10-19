@@ -1,5 +1,6 @@
 package ru.university.chirkov.controller;
 
+import ru.university.chirkov.exception.BusinessException;
 import ru.university.chirkov.model.BattleField;
 import ru.university.chirkov.service.BattleFieldService;
 import ru.university.chirkov.service.CombatUnitService;
@@ -32,24 +33,27 @@ public class BattleFieldController {
 
     public void create() {
         if (battleFieldService.get() != null) {
-            System.out.println(
+            throw new BusinessException(
                     "Поле уже существует. Измените его или удалите перед созданием нового."
             );
-            return;
         }
 
-        System.out.println("Введите ширину поля: ");
+        System.out.print("Введите ширину поля: ");
         int width = scanner.nextInt();
 
-        System.out.println("Введите высоту поля: ");
+        System.out.print("Введите высоту поля: ");
         int height = scanner.nextInt();
 
         if (width <= 0 || height <= 0) {
-            System.out.println("Ошибка: ширина и высота должны быть больше 0");
-            return;
+            throw new BusinessException(
+                    "Ширина и высота должны быть больше нуля"
+            );
         }
 
-        battleFieldService.save(new BattleField(width, height, new ArrayList<>()));
+        battleFieldService.save(
+                new BattleField(width, height, new ArrayList<>())
+        );
+
         System.out.println("Поле создано");
     }
 
@@ -72,8 +76,7 @@ public class BattleFieldController {
         BattleField battleField = battleFieldService.get();
 
         if (battleField == null) {
-            System.out.println("Сначала создайте поле");
-            return;
+            throw new BusinessException("Сначала создайте поле");
         }
 
         System.out.print("Введите новую ширину поля: ");
@@ -83,17 +86,17 @@ public class BattleFieldController {
         int height = scanner.nextInt();
 
         if (width <= 0 || height <= 0) {
-            System.out.println("Размеры должны быть больше нуля");
-            return;
+            throw new BusinessException(
+                    "Размеры должны быть больше нуля"
+            );
         }
 
         for (var unit : combatUnitService.findAll()) {
             for (var cell : unit.getCells()) {
                 if (cell.getX() > width || cell.getY() > height) {
-                    System.out.println(
+                    throw new BusinessException(
                             "Нельзя уменьшить поле: за его пределами находится юнит"
                     );
-                    return;
                 }
             }
         }
@@ -101,10 +104,9 @@ public class BattleFieldController {
         for (var object : staticObjectService.findAll()) {
             for (var cell : object.getCells()) {
                 if (cell.getX() > width || cell.getY() > height) {
-                    System.out.println(
+                    throw new BusinessException(
                             "Нельзя уменьшить поле: за его пределами находится объект"
                     );
-                    return;
                 }
             }
         }
@@ -118,13 +120,11 @@ public class BattleFieldController {
 
     public void delete() {
         if (battleFieldService.get() == null) {
-            System.out.println("Поле еще не создано");
-            return;
+            throw new BusinessException("Поле ещё не создано");
         }
 
         combatUnitService.deleteAll();
         staticObjectService.deleteAll();
-
         battleFieldService.delete();
 
         System.out.println("Поле удалено");

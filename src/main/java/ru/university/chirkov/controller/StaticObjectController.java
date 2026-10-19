@@ -1,6 +1,8 @@
-
 package ru.university.chirkov.controller;
 
+import ru.university.chirkov.exception.BusinessException;
+import ru.university.chirkov.exception.StaticObjectNameException;
+import ru.university.chirkov.exception.StaticObjectNotFoundException;
 import ru.university.chirkov.model.BattleField;
 import ru.university.chirkov.model.Cell;
 import ru.university.chirkov.model.CombatUnit;
@@ -15,18 +17,18 @@ import java.util.Scanner;
 
 public class StaticObjectController {
 
-    private StaticObjectService service;
+    private StaticObjectService staticObjectService;
     private BattleFieldService battleFieldService;
     private CombatUnitService combatUnitService;
     private Scanner scanner;
 
     public StaticObjectController(
-            StaticObjectService service,
+            StaticObjectService staticObjectService,
             BattleFieldService battleFieldService,
             CombatUnitService combatUnitService,
             Scanner scanner) {
 
-        this.service = service;
+        this.staticObjectService = staticObjectService;
         this.battleFieldService = battleFieldService;
         this.combatUnitService = combatUnitService;
         this.scanner = scanner;
@@ -36,16 +38,14 @@ public class StaticObjectController {
         BattleField battleField = battleFieldService.get();
 
         if (battleField == null) {
-            System.out.println("Сначала создайте поле");
-            return;
+            throw new BusinessException("Сначала создайте поле");
         }
 
         System.out.print("Введите название объекта: ");
         String name = scanner.nextLine().trim();
 
         if (name.isEmpty()) {
-            System.out.println("Название не может быть пустым");
-            return;
+            throw new StaticObjectNameException();
         }
 
         System.out.print("Введите координату X: ");
@@ -54,22 +54,24 @@ public class StaticObjectController {
         System.out.print("Введите координату Y: ");
         int y = scanner.nextInt();
 
-        System.out.println("Введите ширину объекта: ");
+        System.out.print("Введите ширину объекта: ");
         int width = scanner.nextInt();
 
-        System.out.println("Введите высоту объекта: ");
+        System.out.print("Введите высоту объекта: ");
         int height = scanner.nextInt();
 
         if (width <= 0 || height <= 0) {
-            System.out.println("Размеры должны быть больше нуля");
-            return;
+            throw new BusinessException(
+                    "Размеры должны быть больше нуля"
+            );
         }
 
         if (x < 1 || y < 1
                 || x + width - 1 > battleField.getWidth()
                 || y + height - 1 > battleField.getHeight()) {
-            System.out.println("Объект выходит за границы поля");
-            return;
+            throw new BusinessException(
+                    "Объект выходит за границы поля"
+            );
         }
 
         List<Cell> cells = new ArrayList<>();
@@ -80,13 +82,14 @@ public class StaticObjectController {
             }
         }
 
-        for (StaticObject object : service.findAll()) {
+        for (StaticObject object : staticObjectService.findAll()) {
             for (Cell occupied : object.getCells()) {
                 for (Cell cell : cells) {
                     if (occupied.getX() == cell.getX()
                             && occupied.getY() == cell.getY()) {
-                        System.out.println("Клетка занята статическим объектом");
-                        return;
+                        throw new BusinessException(
+                                "Клетка занята статическим объектом"
+                        );
                     }
                 }
             }
@@ -97,20 +100,21 @@ public class StaticObjectController {
                 for (Cell cell : cells) {
                     if (occupied.getX() == cell.getX()
                             && occupied.getY() == cell.getY()) {
-                        System.out.println("Клетка занята боевой единицей");
-                        return;
+                        throw new BusinessException(
+                                "Клетка занята боевой единицей"
+                        );
                     }
                 }
             }
         }
 
-        service.add(new StaticObject(name, cells));
+        staticObjectService.add(new StaticObject(name, cells));
 
         System.out.println("Объект добавлен");
     }
 
     public void showAll() {
-        List<StaticObject> objects = service.findAll();
+        List<StaticObject> objects = staticObjectService.findAll();
 
         if (objects.isEmpty()) {
             System.out.println("Статических объектов пока нет");
@@ -127,23 +131,21 @@ public class StaticObjectController {
         int id = scanner.nextInt();
         scanner.nextLine();
 
-        StaticObject object = service.findById(id);
+        StaticObject object = staticObjectService.findById(id);
 
         if (object == null) {
-            System.out.println("Объект не найден");
-            return;
+            throw new StaticObjectNotFoundException(id);
         }
 
         System.out.print("Введите новое название: ");
         String name = scanner.nextLine().trim();
 
         if (name.isEmpty()) {
-            System.out.println("Название не может быть пустым");
-            return;
+            throw new StaticObjectNameException();
         }
 
         object.setName(name);
-        service.update(object);
+        staticObjectService.update(object);
 
         System.out.println("Объект обновлён");
     }
@@ -152,10 +154,10 @@ public class StaticObjectController {
         System.out.print("Введите ID объекта: ");
         int id = scanner.nextInt();
 
-        if (service.remove(id)) {
-            System.out.println("Объект удалён");
-        } else {
-            System.out.println("Объект не найден");
+        if (!staticObjectService.remove(id)) {
+            throw new StaticObjectNotFoundException(id);
         }
+
+        System.out.println("Объект удалён");
     }
 }

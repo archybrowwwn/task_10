@@ -1,6 +1,7 @@
-
 package ru.university.chirkov.controller;
 
+import ru.university.chirkov.exception.BusinessException;
+import ru.university.chirkov.exception.CombatUnitNotFoundException;
 import ru.university.chirkov.model.BattleField;
 import ru.university.chirkov.model.Cell;
 import ru.university.chirkov.model.CombatUnit;
@@ -15,18 +16,18 @@ import java.util.Scanner;
 
 public class CombatUnitController {
 
-    private CombatUnitService service;
+    private CombatUnitService combatUnitService;
     private BattleFieldService battleFieldService;
     private StaticObjectService staticObjectService;
     private Scanner scanner;
 
     public CombatUnitController(
-            CombatUnitService service,
+            CombatUnitService combatUnitService,
             BattleFieldService battleFieldService,
             StaticObjectService staticObjectService,
             Scanner scanner) {
 
-        this.service = service;
+        this.combatUnitService = combatUnitService;
         this.battleFieldService = battleFieldService;
         this.staticObjectService = staticObjectService;
         this.scanner = scanner;
@@ -36,8 +37,7 @@ public class CombatUnitController {
         BattleField battleField = battleFieldService.get();
 
         if (battleField == null) {
-            System.out.println("Сначала создайте поле");
-            return;
+            throw new BusinessException("Сначала создайте поле");
         }
 
         System.out.print("Введите скорость боевой единицы: ");
@@ -52,32 +52,36 @@ public class CombatUnitController {
         System.out.print("Введите координату Y: ");
         int y = scanner.nextInt();
 
-        System. out.println("Введите ширину юнита");
+        System.out.println("Введите ширину юнита");
         int width = scanner.nextInt();
 
         System.out.println("Введите высоту юнита");
         int height = scanner.nextInt();
 
         if (speed < 0) {
-            System.out.println("Скорость не может быть отрицательной");
-            return;
+            throw new BusinessException(
+                    "Скорость не может быть отрицательной"
+            );
         }
 
         if (attackRange <= 0) {
-            System.out.println("Дальность стрельбы должна быть больше нуля");
-            return;
+            throw new BusinessException(
+                    "Дальность стрельбы должна быть больше нуля"
+            );
         }
 
         if (width <= 0 || height <= 0) {
-            System.out.println("Размеры должны быть больше нуля");
-            return;
+            throw new BusinessException(
+                    "Размеры должны быть больше нуля"
+            );
         }
 
         if (x < 1 || y < 1
                 || x + width - 1 > battleField.getWidth()
                 || y + height - 1 > battleField.getHeight()) {
-            System.out.println("Юнит выходит за пределы поля");
-            return;
+            throw new BusinessException(
+                    "Юнит выходит за пределы поля"
+            );
         }
 
         List<Cell> cells = new ArrayList<>();
@@ -88,12 +92,14 @@ public class CombatUnitController {
             }
         }
 
-        for (CombatUnit unit : service.findAll()) {
+        for (CombatUnit unit : combatUnitService.findAll()) {
             for (Cell occupied : unit.getCells()) {
                 for (Cell cell : cells) {
-                    if (occupied.getX() == cell.getX() && occupied.getY() == cell.getY()) {
-                        System.out.println("Клетка занята другой боевой единицей");
-                        return;
+                    if (occupied.getX() == cell.getX()
+                            && occupied.getY() == cell.getY()) {
+                        throw new BusinessException(
+                                "Клетка занята другой боевой единицей"
+                        );
                     }
                 }
             }
@@ -102,9 +108,11 @@ public class CombatUnitController {
         for (StaticObject object : staticObjectService.findAll()) {
             for (Cell occupied : object.getCells()) {
                 for (Cell cell : cells) {
-                    if (occupied.getX() == cell.getX() && occupied.getY() == cell.getY()) {
-                        System.out.println("Клетка занята статическим объектом");
-                        return;
+                    if (occupied.getX() == cell.getX()
+                            && occupied.getY() == cell.getY()) {
+                        throw new BusinessException(
+                                "Клетка занята статическим объектом"
+                        );
                     }
                 }
             }
@@ -112,13 +120,13 @@ public class CombatUnitController {
 
         CombatUnit unit = new CombatUnit(cells, speed);
         unit.setAttackRange(attackRange);
-        service.add(unit);
+        combatUnitService.add(unit);
 
         System.out.println("Боевая единица добавлена");
     }
 
     public void showAll() {
-        List<CombatUnit> units = service.findAll();
+        List<CombatUnit> units = combatUnitService.findAll();
 
         if (units.isEmpty()) {
             System.out.println("Боевых единиц пока нет");
@@ -134,23 +142,23 @@ public class CombatUnitController {
         System.out.print("Введите ID боевой единицы: ");
         int id = scanner.nextInt();
 
-        CombatUnit unit = service.findById(id);
+        CombatUnit unit = combatUnitService.findById(id);
 
         if (unit == null) {
-            System.out.println("Боевая единица не найдена");
-            return;
+            throw new CombatUnitNotFoundException(id);
         }
 
         System.out.print("Введите новую скорость: ");
         int speed = scanner.nextInt();
 
         if (speed < 0) {
-            System.out.println("Скорость не может быть отрицательной");
-            return;
+            throw new BusinessException(
+                    "Скорость не может быть отрицательной"
+            );
         }
 
         unit.setSpeed(speed);
-        service.update(unit);
+        combatUnitService.update(unit);
 
         System.out.println("Боевая единица обновлена");
     }
@@ -159,39 +167,37 @@ public class CombatUnitController {
         System.out.print("Введите ID боевой единицы: ");
         int id = scanner.nextInt();
 
-        if (service.remove(id)) {
-            System.out.println("Боевая единица удалена");
-        } else {
-            System.out.println("Боевая единица не найдена");
+        if (!combatUnitService.remove(id)) {
+            throw new CombatUnitNotFoundException(id);
         }
+
+        System.out.println("Боевая единица удалена");
     }
 
     public void move() {
         BattleField battleField = battleFieldService.get();
 
         if (battleField == null) {
-            System.out.println("Сначала создайте поле");
-            return;
+            throw new BusinessException("Сначала создайте поле");
         }
 
         System.out.print("Введите ID юнита: ");
         int id = scanner.nextInt();
 
-        CombatUnit unit = service.findById(id);
+        CombatUnit unit = combatUnitService.findById(id);
 
         if (unit == null) {
-            System.out.println("Юнит не найден");
-            return;
+            throw new CombatUnitNotFoundException(id);
         }
 
         if (unit.isDestroyed()) {
-            System.out.println("Уничтоженный юнит не может двигаться");
-            return;
+            throw new BusinessException(
+                    "Уничтоженный юнит не может двигаться"
+            );
         }
 
         if (unit.getSpeed() == 0) {
-            System.out.println("Этот юнит неподвижен");
-            return;
+            throw new BusinessException("Этот юнит неподвижен");
         }
 
         int currentX = unit.getCells().get(0).getX();
@@ -206,8 +212,14 @@ public class CombatUnitController {
         int height = 0;
 
         for (Cell cell : unit.getCells()) {
-            width = Math.max(width, cell.getX() - currentX + 1);
-            height = Math.max(height, cell.getY() - currentY + 1);
+            width = Math.max(
+                    width,
+                    cell.getX() - currentX + 1
+            );
+            height = Math.max(
+                    height,
+                    cell.getY() - currentY + 1
+            );
         }
 
         System.out.print("Введите новую X: ");
@@ -219,13 +231,15 @@ public class CombatUnitController {
         if (x < 1 || y < 1
                 || x + width - 1 > battleField.getWidth()
                 || y + height - 1 > battleField.getHeight()) {
-            System.out.println("Координаты за пределами поля");
-            return;
+            throw new BusinessException(
+                    "Координаты за пределами поля"
+            );
         }
 
         if (x != currentX && y != currentY) {
-            System.out.println("Двигаться можно только по горизонтали или вертикали");
-            return;
+            throw new BusinessException(
+                    "Двигаться можно только по горизонтали или вертикали"
+            );
         }
 
         int dx = x - currentX;
@@ -234,8 +248,7 @@ public class CombatUnitController {
         int distance = Math.abs(dx) + Math.abs(dy);
 
         if (distance == 0 || distance > unit.getSpeed()) {
-            System.out.println("Недопустимое расстояние");
-            return;
+            throw new BusinessException("Недопустимое расстояние");
         }
 
         int steps = Math.max(Math.abs(dx), Math.abs(dy));
@@ -250,24 +263,28 @@ public class CombatUnitController {
                 int nextX = oldCell.getX() + offsetX;
                 int nextY = oldCell.getY() + offsetY;
 
-                for (CombatUnit other : service.findAll()) {
+                for (CombatUnit other : combatUnitService.findAll()) {
                     if (other.getId() == id) {
                         continue;
                     }
 
                     for (Cell cell : other.getCells()) {
-                        if (cell.getX() == nextX && cell.getY() == nextY) {
-                            System.out.println("Путь занят другим юнитом");
-                            return;
+                        if (cell.getX() == nextX
+                                && cell.getY() == nextY) {
+                            throw new BusinessException(
+                                    "Путь занят другим юнитом"
+                            );
                         }
                     }
                 }
 
                 for (StaticObject object : staticObjectService.findAll()) {
                     for (Cell cell : object.getCells()) {
-                        if (cell.getX() == nextX && cell.getY() == nextY) {
-                            System.out.println("Путь заблокирован объектом");
-                            return;
+                        if (cell.getX() == nextX
+                                && cell.getY() == nextY) {
+                            throw new BusinessException(
+                                    "Путь заблокирован объектом"
+                            );
                         }
                     }
                 }
@@ -284,7 +301,7 @@ public class CombatUnitController {
         }
 
         unit.setCells(newCells);
-        service.update(unit);
+        combatUnitService.update(unit);
 
         System.out.println("Юнит перемещён");
     }
@@ -293,23 +310,22 @@ public class CombatUnitController {
         BattleField battleField = battleFieldService.get();
 
         if (battleField == null) {
-            System.out.println("Сначала создайте поле");
-            return;
+            throw new BusinessException("Сначала создайте поле");
         }
 
         System.out.print("ID стреляющего юнита: ");
         int shooterId = scanner.nextInt();
 
-        CombatUnit shooter = service.findById(shooterId);
+        CombatUnit shooter = combatUnitService.findById(shooterId);
 
         if (shooter == null) {
-            System.out.println("Стреляющий юнит не найден");
-            return;
+            throw new CombatUnitNotFoundException(shooterId);
         }
 
         if (shooter.isDestroyed()) {
-            System.out.println("Уничтоженный юнит не может стрелять");
-            return;
+            throw new BusinessException(
+                    "Уничтоженный юнит не может стрелять"
+            );
         }
 
         System.out.println("Направление выстрела:");
@@ -317,7 +333,7 @@ public class CombatUnitController {
         System.out.println("2 - вниз");
         System.out.println("3 - влево");
         System.out.println("4 - вправо");
-        System.out.println("Ваш выбор: ");
+        System.out.print("Ваш выбор: ");
 
         int direction = scanner.nextInt();
 
@@ -342,8 +358,9 @@ public class CombatUnitController {
                 dy = 0;
                 break;
             default:
-                System.out.println("Неизвестное направление");
-                return;
+                throw new BusinessException(
+                        "Неизвестное направление"
+                );
         }
 
         int startX = shooter.getCells().get(0).getX();
@@ -378,14 +395,16 @@ public class CombatUnitController {
                 for (Cell cell : object.getCells()) {
                     if (cell.getX() == x && cell.getY() == y) {
                         System.out.println(
-                                "Снаряд попал в препятствие: " + cell.getX()
+                                "Снаряд попал в препятствие: "
+                                        + object.getName()
+                                        + " в клетке (" + x + ", " + y + ")"
                         );
                         return;
                     }
                 }
             }
 
-            for (CombatUnit target : service.findAll()) {
+            for (CombatUnit target : combatUnitService.findAll()) {
                 if (target.getId() == shooterId || target.isDestroyed()) {
                     continue;
                 }
@@ -410,11 +429,13 @@ public class CombatUnitController {
                             "Попадание в юнита #" + target.getId()
                     );
                     System.out.println(
-                            "Здоровье: " + oldHealth + " -> " + target.getHealth()
+                            "Здоровье: " + oldHealth
+                                    + " -> " + target.getHealth()
                     );
 
                     if (target.isDestroyed()) {
-                        service.remove(target.getId());
+                        combatUnitService.remove(target.getId());
+
                         System.out.println(
                                 "Юнит #" + target.getId() + " уничтожен"
                         );
