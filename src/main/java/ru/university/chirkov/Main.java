@@ -1,5 +1,6 @@
 package ru.university.chirkov;
 
+import ru.university.chirkov.config.DatabaseConfig;
 import ru.university.chirkov.controller.BattleFieldController;
 import ru.university.chirkov.controller.CmdController;
 import ru.university.chirkov.controller.CombatUnitController;
@@ -11,10 +12,14 @@ import ru.university.chirkov.service.BattleFieldService;
 import ru.university.chirkov.service.CombatUnitService;
 import ru.university.chirkov.service.StaticObjectService;
 
+import javax.sql.DataSource;
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
+        DataSource dataSource = DatabaseConfig.createDataSource();
+        DatabaseConfig.testConnection(dataSource);
+
         Scanner scanner = new Scanner(System.in);
 
         BattleFieldService battleFieldService =

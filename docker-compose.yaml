@@ -7,4 +7,4 @@ services:
       POSTGRES_PASSWORD: battlefield
       POSTGRES_DB: battlefield
     ports:
-      - "5432:5432"
+      - "5433:5432"
