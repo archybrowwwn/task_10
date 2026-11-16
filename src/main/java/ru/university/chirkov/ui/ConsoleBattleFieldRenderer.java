@@ -21,12 +21,12 @@ public class ConsoleBattleFieldRenderer {
 
         for (int y = 1; y <= height; y++) {
             for (int x = 1; x <= width; x++) {
-                char symbol = '.';
+                String symbol = ".";
 
                 for (CombatUnit combatUnit : combatUnits) {
-                    for(Cell cell : combatUnit.getCells()) {
+                    for (Cell cell : combatUnit.getCells()) {
                         if (cell.getX() == x && cell.getY() == y) {
-                            symbol = 'B';
+                            symbol = String.valueOf(combatUnit.getId());
                         }
                     }
                 }
@@ -34,7 +34,7 @@ public class ConsoleBattleFieldRenderer {
                 for (StaticObject staticObject : staticObjects) {
                     for (Cell cell : staticObject.getCells()) {
                         if (cell.getX() == x && cell.getY() == y) {
-                            symbol = '#';
+                            symbol = "#";
                         }
                     }
                 }
