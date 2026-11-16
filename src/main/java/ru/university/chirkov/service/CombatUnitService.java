@@ -1,15 +1,15 @@
 package ru.university.chirkov.service;
 
 import ru.university.chirkov.model.CombatUnit;
-import ru.university.chirkov.repository.CombatUnitRepository;
+import ru.university.chirkov.repository.CombatUnitRepositoryInMemoryImpl;
 
 import java.util.List;
 
 public class CombatUnitService {
 
-    private CombatUnitRepository repository;
+    private CombatUnitRepositoryInMemoryImpl repository;
 
-    public CombatUnitService(CombatUnitRepository repository) {
+    public CombatUnitService(CombatUnitRepositoryInMemoryImpl repository) {
         this.repository = repository;
     }
 

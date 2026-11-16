@@ -11,11 +11,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class BattleFieldRepositoryTest {
 
-    private BattleFieldRepository repository;
+    private BattleFieldRepositoryInMemoryImpl repository;
 
     @BeforeEach
     void setUp() {
-        repository = new BattleFieldRepository();
+        repository = new BattleFieldRepositoryInMemoryImpl();
     }
 
     private BattleField createBattleField(int width, int height) {

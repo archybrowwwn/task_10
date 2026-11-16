@@ -5,9 +5,9 @@ import ru.university.chirkov.controller.BattleFieldController;
 import ru.university.chirkov.controller.CmdController;
 import ru.university.chirkov.controller.CombatUnitController;
 import ru.university.chirkov.controller.StaticObjectController;
-import ru.university.chirkov.repository.BattleFieldRepository;
-import ru.university.chirkov.repository.CombatUnitRepository;
-import ru.university.chirkov.repository.StaticObjectRepository;
+import ru.university.chirkov.repository.BattleFieldRepositoryInMemoryImpl;
+import ru.university.chirkov.repository.CombatUnitRepositoryInMemoryImpl;
+import ru.university.chirkov.repository.StaticObjectRepositoryInMemoryImpl;
 import ru.university.chirkov.service.BattleFieldService;
 import ru.university.chirkov.service.CombatUnitService;
 import ru.university.chirkov.service.StaticObjectService;
@@ -23,13 +23,13 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
 
         BattleFieldService battleFieldService =
-                new BattleFieldService(new BattleFieldRepository());
+                new BattleFieldService(new BattleFieldRepositoryInMemoryImpl());
 
         CombatUnitService combatUnitService =
-                new CombatUnitService(new CombatUnitRepository());
+                new CombatUnitService(new CombatUnitRepositoryInMemoryImpl());
 
         StaticObjectService staticObjectService =
-                new StaticObjectService(new StaticObjectRepository());
+                new StaticObjectService(new StaticObjectRepositoryInMemoryImpl());
 
         BattleFieldController battleFieldController =
                 new BattleFieldController(

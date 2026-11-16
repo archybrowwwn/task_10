@@ -5,19 +5,17 @@ import org.junit.jupiter.api.Test;
 import ru.university.chirkov.model.Cell;
 import ru.university.chirkov.model.StaticObject;
 
-import ru.university.chirkov.repository.StaticObjectRepository;
-
 import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class StaticObjectRepositoryTest {
 
-    private StaticObjectRepository repository;
+    private StaticObjectRepositoryInMemoryImpl repository;
 
     @BeforeEach
     void setUp() {
-        repository = new StaticObjectRepository();
+        repository = new StaticObjectRepositoryInMemoryImpl();
     }
 
     private StaticObject createObject(String name, int x, int y) {

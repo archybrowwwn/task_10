@@ -12,11 +12,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class CombatUnitRepositoryTest {
 
-    private CombatUnitRepository repository;
+    private CombatUnitRepositoryInMemoryImpl repository;
 
     @BeforeEach
     void setUp() {
-        repository = new CombatUnitRepository();
+        repository = new CombatUnitRepositoryInMemoryImpl();
     }
 
     private CombatUnit createUnit(int x, int y, int speed) {
