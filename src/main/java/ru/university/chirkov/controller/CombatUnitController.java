@@ -255,6 +255,9 @@ public class CombatUnitController {
         int stepX = Integer.compare(dx, 0);
         int stepY = Integer.compare(dy, 0);
 
+        List<CombatUnit> allUnits = combatUnitService.findAll();
+        List<StaticObject> allObjects = staticObjectService.findAll();
+
         for (int step = 1; step <= steps; step++) {
             int offsetX = stepX * step;
             int offsetY = stepY * step;
@@ -263,7 +266,7 @@ public class CombatUnitController {
                 int nextX = oldCell.getX() + offsetX;
                 int nextY = oldCell.getY() + offsetY;
 
-                for (CombatUnit other : combatUnitService.findAll()) {
+                for (CombatUnit other : allUnits) {
                     if (other.getId() == id) {
                         continue;
                     }
@@ -278,7 +281,7 @@ public class CombatUnitController {
                     }
                 }
 
-                for (StaticObject object : staticObjectService.findAll()) {
+                for (StaticObject object : allObjects) {
                     for (Cell cell : object.getCells()) {
                         if (cell.getX() == nextX
                                 && cell.getY() == nextY) {
@@ -378,6 +381,9 @@ public class CombatUnitController {
             }
         }
 
+        List<CombatUnit> allUnits = combatUnitService.findAll();
+        List<StaticObject> allObjects = staticObjectService.findAll();
+
         for (int distance = 1;
              distance <= shooter.getAttackRange();
              distance++) {
@@ -391,7 +397,7 @@ public class CombatUnitController {
                 return;
             }
 
-            for (StaticObject object : staticObjectService.findAll()) {
+            for (StaticObject object : allObjects) {
                 for (Cell cell : object.getCells()) {
                     if (cell.getX() == x && cell.getY() == y) {
                         System.out.println(
@@ -404,7 +410,7 @@ public class CombatUnitController {
                 }
             }
 
-            for (CombatUnit target : combatUnitService.findAll()) {
+            for (CombatUnit target : allUnits) {
                 if (target.getId() == shooterId || target.isDestroyed()) {
                     continue;
                 }
