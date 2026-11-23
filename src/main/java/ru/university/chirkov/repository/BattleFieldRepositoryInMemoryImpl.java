@@ -2,18 +2,21 @@ package ru.university.chirkov.repository;
 
 import ru.university.chirkov.model.BattleField;
 
-public class BattleFieldRepositoryInMemoryImpl {
+public class BattleFieldRepositoryInMemoryImpl implements BattleFieldRepository{
 
     private BattleField battleField;
 
+    @Override
     public void save(BattleField battleField) {
         this.battleField = battleField;
     }
 
+    @Override
     public BattleField get() {
         return battleField;
     }
 
+    @Override
     public boolean update(BattleField battleField) {
         if (this.battleField == null) {
             return false;
@@ -23,6 +26,7 @@ public class BattleFieldRepositoryInMemoryImpl {
         return true;
     }
 
+    @Override
     public boolean delete() {
         if (battleField == null) {
             return false;

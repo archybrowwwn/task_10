@@ -1,13 +1,13 @@
 package ru.university.chirkov.service;
 
 import ru.university.chirkov.model.BattleField;
-import ru.university.chirkov.repository.BattleFieldRepositoryInMemoryImpl;
+import ru.university.chirkov.repository.BattleFieldRepository;
 
 public class BattleFieldService {
 
-    private BattleFieldRepositoryInMemoryImpl repository;
+    private BattleFieldRepository repository;
 
-    public BattleFieldService(BattleFieldRepositoryInMemoryImpl repository) {
+    public BattleFieldService(BattleFieldRepository repository) {
         this.repository = repository;
     }
 

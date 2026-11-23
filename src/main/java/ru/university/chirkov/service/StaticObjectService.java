@@ -1,15 +1,15 @@
 package ru.university.chirkov.service;
 
 import ru.university.chirkov.model.StaticObject;
-import ru.university.chirkov.repository.StaticObjectRepositoryInMemoryImpl;
+import ru.university.chirkov.repository.StaticObjectRepository;
 
 import java.util.List;
 
 public class StaticObjectService {
 
-    private StaticObjectRepositoryInMemoryImpl repository;
+    private StaticObjectRepository repository;
 
-    public StaticObjectService(StaticObjectRepositoryInMemoryImpl repository) {
+    public StaticObjectService(StaticObjectRepository repository) {
         this.repository = repository;
     }
 
