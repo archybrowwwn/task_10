@@ -10,10 +10,16 @@ repositories {
 }
 
 dependencies {
+    implementation 'org.postgresql:postgresql:42.7.14'
+
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
 }
 
 test {
     useJUnitPlatform()
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
 }

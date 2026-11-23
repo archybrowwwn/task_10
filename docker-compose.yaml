@@ -1,0 +1,10 @@
+﻿
+services:
+  db:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: battlefield
+      POSTGRES_PASSWORD: battlefield
+      POSTGRES_DB: battlefield
+    ports:
+      - "5433:5432"
