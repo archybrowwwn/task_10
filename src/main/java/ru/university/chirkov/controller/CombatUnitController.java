@@ -439,6 +439,8 @@ public class CombatUnitController {
                         System.out.println(
                                 "Юнит #" + target.getId() + " уничтожен"
                         );
+                    } else {
+                        combatUnitService.update(target);
                     }
 
                     return;

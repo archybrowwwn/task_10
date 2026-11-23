@@ -5,9 +5,9 @@ import ru.university.chirkov.controller.BattleFieldController;
 import ru.university.chirkov.controller.CmdController;
 import ru.university.chirkov.controller.CombatUnitController;
 import ru.university.chirkov.controller.StaticObjectController;
-import ru.university.chirkov.repository.BattleFieldRepositoryInMemoryImpl;
-import ru.university.chirkov.repository.CombatUnitRepositoryInMemoryImpl;
-import ru.university.chirkov.repository.StaticObjectRepositoryInMemoryImpl;
+import ru.university.chirkov.repository.BattleFieldRepositoryDatabaseImpl;
+import ru.university.chirkov.repository.CombatUnitRepositoryDatabaseImpl;
+import ru.university.chirkov.repository.StaticObjectRepositoryDatabaseImpl;
 import ru.university.chirkov.service.BattleFieldService;
 import ru.university.chirkov.service.CombatUnitService;
 import ru.university.chirkov.service.StaticObjectService;
@@ -19,17 +19,18 @@ public class Main {
     public static void main(String[] args) {
         DataSource dataSource = DatabaseConfig.createDataSource();
         DatabaseConfig.testConnection(dataSource);
+        DatabaseConfig.initializeDatabase(dataSource);
 
         Scanner scanner = new Scanner(System.in);
 
         BattleFieldService battleFieldService =
-                new BattleFieldService(new BattleFieldRepositoryInMemoryImpl());
+                new BattleFieldService(new BattleFieldRepositoryDatabaseImpl(dataSource));
 
         CombatUnitService combatUnitService =
-                new CombatUnitService(new CombatUnitRepositoryInMemoryImpl());
+                new CombatUnitService(new CombatUnitRepositoryDatabaseImpl(dataSource));
 
         StaticObjectService staticObjectService =
-                new StaticObjectService(new StaticObjectRepositoryInMemoryImpl());
+                new StaticObjectService(new StaticObjectRepositoryDatabaseImpl(dataSource));
 
         BattleFieldController battleFieldController =
                 new BattleFieldController(
